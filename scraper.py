@@ -172,3 +172,7 @@ def clear_collections():
 
 if __name__ == "__main__":
     schedule_article_scraping()
+
+
+x = 10
+
