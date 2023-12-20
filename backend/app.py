@@ -26,6 +26,20 @@ def get_articles(collection_name):
     return jsonify({"articles": articles})
 
 
+@app.route('/api/genres', methods=['GET'])
+def get_genres():
+    collection_names = db.list_collection_names()
+
+    all_genres = set()
+
+    for collection_name in collection_names:
+        collection = db[collection_name]
+        genres = collection.distinct('genre')
+        all_genres.update(genres)
+
+    all_genres_list = list(all_genres)
+
+    return jsonify({"genres": all_genres_list})
 
 
 if __name__ == '__main__':

@@ -151,7 +151,7 @@ def schedule_article_scraping():
     categories = [
         ("https://www.popsci.com/category/technology", "technology", 2, "technology_articles"),
         ("https://www.popsci.com/category/environment", "environment", 2, "environment_articles"),
-        ("https://www.popsci.com/category/science", "science", 5, "science_articles"),
+        ("https://www.popsci.com/category/science", "science", 2, "science_articles"),
         ("https://www.popsci.com/category/health", "health", 2, "health_articles"),
         ("https://www.popsci.com/category/gear", "gear", 2, "gear_articles"),
         ("https://www.popsci.com/category/diy", "diy", 2, "diy_articles"),
