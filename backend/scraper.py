@@ -1,3 +1,4 @@
+# Importing libraries
 import datetime
 import requests
 from bs4 import BeautifulSoup
@@ -11,19 +12,24 @@ from dateutil import parser
 
 
 
-
+# Configure logging to write logs to 'app.log'
 logging.basicConfig(filename='app.log', filemode='w', level=logging.INFO)
 
-
+# Load environment variables
 load_dotenv()
 
+# Get MongoDB URI from environment variables
 MONGOURI = os.getenv('MONGODBURI')
+
+# Connecting to articles database using the MongoDB URI
 client = MongoClient(MONGOURI)
 db = client['articles']
 
+
+# Creating a 'user agent' which allows sites to see who is scraping their site
 user_agent_edge = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.48"
 
-
+# Get article links based on URL & keyword
 def retrieve_article_links(url, keyword, num_pages=1):
     article_links = set()
 
@@ -31,55 +37,72 @@ def retrieve_article_links(url, keyword, num_pages=1):
         "User-Agent": user_agent_edge,
     }
 
+    # Loop through specified number of pages
     for page_num in range(1, num_pages+1):
+        # Construct URL for current page
         page_url = f"{url}/page/{page_num}/"
 
         try:
+            # Make an HTTP GET to page
             page = requests.get(page_url)
             page.raise_for_status()
         except requests.exceptions.RequestException as e:
+            # Log error if there is an issue with request
             logging.error(f"Error making request to {page_url}: {e}")
             continue
 
         try:
+            # Parse HTML content using BeautifulSoup
             soup = BeautifulSoup(page.content, "html.parser")
         except Exception as e:
+            # Log error if there is an issue with parsing HTML
             logging.error(f"Error parsing HTML for {page_url}: {e}")
             continue
 
+        # Extract article links from parsed HTML
         for a in soup.select(".PostsContainer-list article a"):
             link = a["href"]
+            # Add link to the set if it contains specified keyword above
             if keyword in link:
                 article_links.add(link)
 
     return article_links
 
 
+# Function to scrape article data using article URL
 def scrape_article(article_url):
     page = requests.get(article_url)
 
     try:
+        # Check if GET request successful
         page.raise_for_status()
     except requests.exceptions.RequestException as e:
+        # Log error if issue with request
         logging.error(f"Error making request to {article_url}: {e}")
         return None
 
+    # Parse HTML content using BeautifulSoup
     soup = BeautifulSoup(page.content, "html.parser")
 
+    # Extract article data from parsed HTML
     try:
+        # Handle different HTML structures for article titles
         article_title = soup.find("h1", class_='u-entryTitle').text.strip()
     except AttributeError:
         try:
+            # Handle different HTML structures for article titles
             article_title = soup.find("h1", class_='Article-title').text.strip()
         except AttributeError:
             article_title = 'No Title Found'
 
     try:
+        # Handle different HTML structures for article excerpts
         article_excerpt = soup.find("p", class_='Article-excerpt').text.strip()
     except AttributeError:
         article_excerpt = 'No Excerpt Found'
 
     try:
+        # Handle different HTML structures for article author
         author_tag = soup.find("a", class_='fn author-link') or soup.find("a", class_='ArticleReviewAuthor-name author-link') or soup.find("p", class_="Article-author")
         article_author = ' '.join(author_tag.text.split()) if author_tag and author_tag.text else "No Author Found"
     except AttributeError:
@@ -88,6 +111,7 @@ def scrape_article(article_url):
 
 
     try:
+        # Handle different HTML structures for article publish date
         time_tag = soup.find('time')
         article_publish_date = time_tag['datetime'].strip() if time_tag else 'No Publish Date Found'
 

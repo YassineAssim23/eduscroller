@@ -1,33 +1,42 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
+// Define WelcomeScreen component
 const WelcomeScreen = ({ navigation }) => {
+  //State to store fetched genres
   const [genres, setGenres] = useState([]);
 
+  // Fetch genres when component mounts
   useEffect(() => {
     fetchGenres();
   }, []);
 
+  // Function to fetch genres from server
   const fetchGenres = async () => {
     try {
-      const response = await fetch('http://192.168.68.105:5000/api/genres');
+      // Make a GET request to server to fetch genres
+      const response = await fetch('http://192.168.68.109:5000/api/genres');
+      // Parse response as JSON
       const data = await response.json();
+      // Update state with fetched genres
       setGenres(data.genres);
     } catch (error) {
       console.error('Error fetching genres:', error);
     }
   };
 
+  // Function to handle genre selection
   const handleGenrePress = (selectedGenre) => {
     // Implement logic to handle the selected genre
     console.log('Selected Genre:', selectedGenre);
     // You can navigate or perform other actions as needed
   };
 
+  // Render component
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the App!</Text>
-      <Text style={styles.subtitle}>Select Genres:</Text>
+      <Text style={styles.title}>Welcome to the EDUScroll</Text>
+      <Text style={styles.subtitle}>What are you interested in?</Text>
       <View style={styles.genreContainer}>
         {genres.map((genre) => (
           <TouchableOpacity
