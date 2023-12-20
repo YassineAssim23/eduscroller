@@ -15,6 +15,9 @@ client = MongoClient(MONGOURI)
 db = client['articles']
 
 
+
+ALLOWED_GENRES = ["diy", "science", "technology", "health", "gear", "environment"]
+
 @app.route('/api/articles/<string:collection_name>', methods=['GET'])
 def get_articles(collection_name):
     collection = db[collection_name]
@@ -26,20 +29,40 @@ def get_articles(collection_name):
     return jsonify({"articles": articles})
 
 
+
 @app.route('/api/genres', methods=['GET'])
 def get_genres():
-    collection_names = db.list_collection_names()
+   collection_names = db.list_collection_names()
 
-    all_genres = set()
+   all_genres = set()
 
-    for collection_name in collection_names:
-        collection = db[collection_name]
-        genres = collection.distinct('genre')
-        all_genres.update(genres)
+   for collection_name in collection_names:
+       collection = db[collection_name]
+       genres = collection.distinct('genre')
+       all_genres.update(genres)
 
-    all_genres_list = list(all_genres)
+   all_genres_list = list(all_genres)
 
-    return jsonify({"genres": all_genres_list})
+   categorized_genres = {
+       "diy": "diy",
+       "science": "science",
+       "gear": "gear",
+       "health": "health",
+       "technology": "technology",
+       "environment": "environment"
+   }
+
+   for genre in all_genres:
+       if genre not in ALLOWED_GENRES:
+           categorized_genres[genre] = "other"
+
+   all_genres_list = list(categorized_genres.values())
+
+   # Remove duplicates from the list
+   all_genres_list = list(dict.fromkeys(all_genres_list))
+
+   return jsonify({"genres": all_genres_list})
+
 
 
 if __name__ == '__main__':
