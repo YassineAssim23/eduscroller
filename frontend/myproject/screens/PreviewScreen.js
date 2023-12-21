@@ -1,17 +1,23 @@
+// Import necessary dependencies from React and React Native
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useFonts, Montserrat_400Regular, Montserrat_600SemiBold } from '@expo-google-fonts/montserrat';
 
+// Define the PreviewScreen component
 const PreviewScreen = ({ route, navigation }) => {
+    // Destructure genres from the route parameters
     const { genres } = route.params;
+    // States to manage preview articles, loading status, and error
     const [previewArticles, setPreviewArticles] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Fetch preview articles when the component mounts or genres change
     useEffect(() => {
         fetchPreviewArticles();
     }, [genres]);
 
+    // Function to fetch preview articles from the server
     const fetchPreviewArticles = async () => {
         try {
             // Send selected genres as an array in the request
@@ -23,19 +29,24 @@ const PreviewScreen = ({ route, navigation }) => {
                 body: JSON.stringify({ genres }),
             });
 
+            // Parse response as JSON
             const data = await response.json();
 
+            // Check for errors in the response
             if (data.error) {
                 console.error('Error fetching preview articles:', data.error);
                 setError(data.error);
             } else {
+                // Randomize the order of articles
                 const randomizedArticles = data.articles.sort(() => Math.random() - 0.5);
+                // Set the preview articles in the state
                 setPreviewArticles(randomizedArticles);
             }
         } catch (error) {
             console.error('Error fetching preview articles:', error);
             setError('An error occurred while fetching articles.');
         } finally {
+            // Set loading state to false after fetching articles
             setLoading(false);
         }
     };
@@ -46,11 +57,12 @@ const PreviewScreen = ({ route, navigation }) => {
         Montserrat_600SemiBold,
     });
 
+    // If fonts are not loaded, render a loading indicator
     if (!fontsLoaded) {
-        // You can render a loading indicator here if needed
         return null;
     }
 
+    // Render each article in the FlatList
     const renderItem = ({ item }) => {
         return (
             <TouchableOpacity
@@ -71,8 +83,10 @@ const PreviewScreen = ({ route, navigation }) => {
         );
     };
 
+    // Render the component
     return (
         <View style={styles.container}>
+            {/* Render loading state, error state, or the FlatList of preview articles */}
             {loading ? (
                 <Text>Loading...</Text>
             ) : error ? (
@@ -88,6 +102,7 @@ const PreviewScreen = ({ route, navigation }) => {
     );
 };
 
+// Styles for the PreviewScreen component
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -143,4 +158,5 @@ const styles = StyleSheet.create({
     },
 });
 
+// Export the PreviewScreen component
 export default PreviewScreen;

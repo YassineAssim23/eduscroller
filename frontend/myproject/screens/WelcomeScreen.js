@@ -1,3 +1,4 @@
+// Import necessary dependencies from React and React Native
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 import { useFonts, Montserrat_400Regular, Montserrat_600SemiBold } from '@expo-google-fonts/montserrat';
@@ -14,10 +15,10 @@ const WelcomeScreen = ({ navigation }) => {
     fetchGenres();
   }, []);
 
-  // Function to fetch genres from server
+  // Function to fetch genres from the server
   const fetchGenres = async () => {
     try {
-      // Make a GET request to server to fetch genres
+      // Make a GET request to the server to fetch genres
       const response = await fetch('http://192.168.68.109:5000/api/genres');
       // Parse response as JSON
       const data = await response.json();
@@ -46,8 +47,8 @@ const WelcomeScreen = ({ navigation }) => {
     Montserrat_600SemiBold,
   });
 
+  // If fonts are not loaded, render a loading indicator
   if (!fontsLoaded) {
-    // You can render a loading indicator here if needed
     return null;
   }
 
@@ -78,6 +79,7 @@ const WelcomeScreen = ({ navigation }) => {
   );
 };
 
+// Styles for the WelcomeScreen component
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -119,4 +121,5 @@ const styles = StyleSheet.create({
   },
 });
 
+// Export the WelcomeScreen component
 export default WelcomeScreen;

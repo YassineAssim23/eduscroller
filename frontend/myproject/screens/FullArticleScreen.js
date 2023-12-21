@@ -1,22 +1,26 @@
+// Import necessary dependencies from React and React Native
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 import { useFonts, Montserrat_400Regular, Montserrat_600SemiBold } from '@expo-google-fonts/montserrat';
 
+// Define the FullArticleScreen component
 const FullArticleScreen = ({ route }) => {
+    // Destructure the article object from the route parameters
     const { article } = route.params;
 
     // State to store the detailed article data
     const [fullArticle, setFullArticle] = useState(null);
     const [error, setError] = useState(null);
 
+    // Fetch detailed article data when the screen mounts
     useEffect(() => {
-        // Fetch detailed article data when the screen mounts
         fetchArticleDetails();
     }, []);
 
+    // Function to fetch detailed article data from the Flask API
     const fetchArticleDetails = async () => {
         try {
-            // Make a GET request to your Flask API to get the full article details
+            // Make a GET request to the Flask API to get the full article details
             const response = await fetch(`http://192.168.68.109:5000/api/articles`, {
                 method: 'POST',
                 headers: {
@@ -25,7 +29,7 @@ const FullArticleScreen = ({ route }) => {
                 body: JSON.stringify({ genres: [article.genre] }),
             });
 
-            // Check if the response status is ok
+            // Check if the response status is OK
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
@@ -47,13 +51,13 @@ const FullArticleScreen = ({ route }) => {
         Montserrat_600SemiBold,
     });
 
+    // If fonts are not loaded, render a loading indicator
     if (!fontsLoaded) {
-        // You can render a loading indicator here if needed
         return null;
     }
 
+    // If there's an error, render an error message
     if (error) {
-        // Render an error message
         return (
             <View style={styles.container}>
                 <Text>Error: {error}</Text>
@@ -61,8 +65,8 @@ const FullArticleScreen = ({ route }) => {
         );
     }
 
+    // If the fullArticle is not available, render a loading state or an error message
     if (!fullArticle) {
-        // Render loading state or an error message
         return (
             <View style={styles.container}>
                 <Text>Loading...</Text>
@@ -77,6 +81,7 @@ const FullArticleScreen = ({ route }) => {
         </Text>
     ));
 
+    // Render the FullArticleScreen component
     return (
         <ScrollView style={styles.scrollView}>
             <View style={styles.container}>
@@ -94,6 +99,7 @@ const FullArticleScreen = ({ route }) => {
     );
 };
 
+// Styles for the FullArticleScreen component
 const styles = StyleSheet.create({
     scrollView: {
         flex: 1,
@@ -138,4 +144,5 @@ const styles = StyleSheet.create({
     },
 });
 
+// Export the FullArticleScreen component
 export default FullArticleScreen;
