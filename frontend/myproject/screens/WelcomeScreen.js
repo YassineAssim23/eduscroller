@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { useFonts, Montserrat_400Regular, Montserrat_600SemiBold } from '@expo-google-fonts/montserrat';
 
 // Define WelcomeScreen component
 const WelcomeScreen = ({ navigation }) => {
@@ -39,10 +40,21 @@ const WelcomeScreen = ({ navigation }) => {
     });
   };
 
+  // Load Montserrat font
+  const [fontsLoaded] = useFonts({
+    Montserrat_400Regular,
+    Montserrat_600SemiBold,
+  });
+
+  if (!fontsLoaded) {
+    // You can render a loading indicator here if needed
+    return null;
+  }
+
   // Render component
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the EDUScroll</Text>
+      <Text style={styles.title}>Welcome to EDUScroll</Text>
       <Text style={styles.subtitle}>What are you interested in?</Text>
       <View style={styles.genreContainer}>
         {genres.map((genre) => (
@@ -72,33 +84,38 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: '#f8f8f8', // Light gray background
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     marginBottom: 16,
+    fontFamily: 'Montserrat_600SemiBold',
+    color: '#333', // Dark gray text
   },
   subtitle: {
     fontSize: 18,
     marginBottom: 8,
+    color: '#555', // Slightly darker gray text
   },
   genreContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    marginTop: 16,
   },
   genreTag: {
-    backgroundColor: '#aaf',
+    backgroundColor: '#3498db', // Blue tag background
     borderRadius: 8,
     paddingVertical: 8,
     paddingHorizontal: 16,
     margin: 4,
   },
   selectedGenreTag: {
-    backgroundColor: '#77c', // Adjust the color to your preference
+    backgroundColor: '#2980b9', // Slightly darker blue for selected tag
   },
   genreText: {
-    // Add additional styles for genre text if needed
+    color: '#fff', // White text
   },
 });
 

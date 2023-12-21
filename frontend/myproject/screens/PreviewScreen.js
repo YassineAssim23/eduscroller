@@ -1,6 +1,6 @@
-// PreviewScreen.js
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { useFonts, Montserrat_400Regular, Montserrat_600SemiBold } from '@expo-google-fonts/montserrat';
 
 const PreviewScreen = ({ route, navigation }) => {
     const { genres } = route.params;
@@ -39,6 +39,17 @@ const PreviewScreen = ({ route, navigation }) => {
             setLoading(false);
         }
     };
+
+    // Load Montserrat font
+    const [fontsLoaded] = useFonts({
+        Montserrat_400Regular,
+        Montserrat_600SemiBold,
+    });
+
+    if (!fontsLoaded) {
+        // You can render a loading indicator here if needed
+        return null;
+    }
 
     const renderItem = ({ item }) => {
         return (
@@ -81,29 +92,54 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 16,
+        backgroundColor: '#f8f8f8', // Light gray background
     },
     articleContainer: {
-        backgroundColor: '#eee',
+        backgroundColor: '#fff', // White background
         borderRadius: 8,
         padding: 16,
         marginBottom: 16,
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
     },
     articleTitle: {
         fontSize: 18,
         fontWeight: 'bold',
+        fontFamily: 'Montserrat_600SemiBold',
+        marginBottom: 8,
+        color: '#333', // Dark gray text
     },
     articleAuthor: {
         fontSize: 16,
+        color: '#555', // Slightly darker gray text
+        marginBottom: 4,
+    },
+    articleGenre: {
+        fontSize: 14,
+        color: '#3498db', // Blue genre text
+        marginBottom: 4,
+    },
+    articleDate: {
+        fontSize: 14,
         color: 'gray',
+        marginBottom: 4,
     },
     articleExcerpt: {
         fontSize: 14,
-        marginTop: 8,
+        color: '#555',
+        marginBottom: 8,
     },
     articleImage: {
-        width: 200,
+        width: '100%',
         height: 200,
-        resizeMode: 'cover',
+        borderRadius: 8,
+        marginTop: 8,
     },
 });
 

@@ -133,9 +133,15 @@ def scrape_article(article_url):
     try:
         # Handle different HTML structures for article image
         image_tag = soup.find('div', class_='orgnc-SingleImage-wrapper').find('img')
-        article_image = image_tag['src'].strip() if image_tag and "src" in image_tag.attrs else "No Image Found"
+        # Exclude the alt text from the image tag
+        if image_tag and "src" in image_tag.attrs:
+            del image_tag['alt']
+            article_image = image_tag['src'].strip()
+        else:
+            article_image = "No Image Found"
     except (AttributeError, KeyError):
         article_image = "No Image Found"
+
 
     try:
         # Handle different HTML structures for article body
