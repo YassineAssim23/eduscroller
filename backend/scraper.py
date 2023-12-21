@@ -26,7 +26,7 @@ client = MongoClient(MONGOURI)
 db = client['articles']
 
 
-# Creating a 'user agent' which allows sites to see who is scraping their site
+# Creating a 'user agent' which allows sites to see who is scraping their site, ensuring we are not a bot
 user_agent_edge = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.48"
 
 # Get article links based on URL & keyword
@@ -125,18 +125,20 @@ def scrape_article(article_url):
         article_publish_date = 'No Publish Date Found'
 
     try:
-        # Extract genre from the URL
+        # Handle different HTML structures for article genre type
         article_genre = article_url.split("/")[3]  # Adjust the index based on the actual URL structure
     except IndexError:
         article_genre = 'No Genre Found'
 
     try:
+        # Handle different HTML structures for article image
         image_tag = soup.find('div', class_='orgnc-SingleImage-wrapper').find('img')
         article_image = image_tag['src'].strip() if image_tag and "src" in image_tag.attrs else "No Image Found"
     except (AttributeError, KeyError):
         article_image = "No Image Found"
 
     try:
+        # Handle different HTML structures for article body
         article_body = soup.find('section', class_='Article-bodyText').text.strip()
     except AttributeError:
         try:
@@ -144,6 +146,7 @@ def scrape_article(article_url):
         except AttributeError:
             article_body = 'No Body Found'
 
+    # Once article info scraped from articles, store in respective variables
     return {
         "title": article_title,
         "author": article_author,
@@ -154,9 +157,11 @@ def scrape_article(article_url):
         "body": article_body
     }
 
+# Function to scrape articles and save them to MongoDB database
 def scrape_and_save_to_mongo(article_links, collection_name):
     collection = db[collection_name]
     
+    # Go through every article link and insert data into collection if all necessary data is scraped
     for article_link in article_links:
         article_data = scrape_article(article_link)
         if article_data and all(article_data.values()):
@@ -165,13 +170,18 @@ def scrape_and_save_to_mongo(article_links, collection_name):
             except Exception as e:
                 logging.error(f"Error inserting data into MongoDB: {e}")
 
+# Scrape articles from a category and save to database
 def scrape_and_save_category(url, keyword, num_pages, collection_name):
     article_links = retrieve_article_links(url, keyword, num_pages)
     scrape_and_save_to_mongo(article_links, collection_name)
 
+# Function to schedule article scraping for multiple categories
 def schedule_article_scraping():
+
+    # Empties all collections
     clear_collections()
 
+    # Categories defined with URLs, keyword/genre, number of pages, and collection name
     categories = [
         ("https://www.popsci.com/category/technology", "technology", 2, "technology_articles"),
         ("https://www.popsci.com/category/environment", "environment", 2, "environment_articles"),
@@ -181,9 +191,11 @@ def schedule_article_scraping():
         ("https://www.popsci.com/category/diy", "diy", 2, "diy_articles"),
     ]
 
+    # Scrape and save articles in each category
     for category in categories:
         scrape_and_save_category(*category)
 
+# Clear existing collections
 def clear_collections():
     collection_names = ["technology_articles", "science_articles", "environment_articles", "diy_articles", "health_articles", "gear_articles"]
 
@@ -194,5 +206,6 @@ def clear_collections():
         except Exception as e:
             logging.error(f"Error clearing collection {collection_name}: {e}")
 
+# Schedule article scraping when script is run
 if __name__ == "__main__":
     schedule_article_scraping()

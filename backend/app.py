@@ -1,4 +1,4 @@
-#Importing Libraries
+# Importing Libraries
 from flask import Flask, jsonify
 from flask import request
 from pymongo import MongoClient
@@ -12,7 +12,7 @@ load_dotenv()
 
 # Creating Flask Application
 app = Flask(__name__)
-CORS(app) # Enable Cross-Origin Resource Sharing
+CORS(app)  # Enable Cross-Origin Resource Sharing
 
 # Get MongoDB URI from environment variables
 MONGOURI = os.getenv('MONGODBURI')
@@ -21,9 +21,8 @@ MONGOURI = os.getenv('MONGODBURI')
 client = MongoClient(MONGOURI)
 db = client['articles']
 
-
 # List of allowed genres
-ALLOWED_GENRES = ["diy", "science", "technology", "health", "gear", "environment"]
+ALLOWED_GENRES = ["diy", "science", "technology", "health", "gear", "environment", "other"]
 
 @app.route('/api/articles', methods=['POST'])
 def get_articles():
@@ -54,6 +53,7 @@ def get_articles():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 # Route to get genres from all collections
 @app.route('/api/genres', methods=['GET'])
