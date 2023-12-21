@@ -3,72 +3,84 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
 const PreviewScreen = ({ route, navigation }) => {
-  const { genre } = route.params;
+    const { genres } = route.params;
+    const [previewArticles, setPreviewArticles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
-  // State to store the preview articles
-  const [previewArticles, setPreviewArticles] = useState([]);
+    useEffect(() => {
+      fetchPreviewArticles();
+    }, [genres]);
 
-  useEffect(() => {
-    // Fetch preview articles when the component mounts
-    fetchPreviewArticles();
-  }, []);
+    const fetchPreviewArticles = async () => {
+        try {
+          // Send selected genres as an array in the request
+          const response = await fetch('http://192.168.68.109:5000/api/articles', {
+            method: 'POST', // Use POST method for sending data
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ genres }),
+          });
+      
+          const data = await response.json();
+      
+          if (data.error) {
+            console.error('Error fetching preview articles:', data.error);
+            setError(data.error);
+          } else {
+            const randomizedArticles = data.articles.sort(() => Math.random() - 0.5);
+            setPreviewArticles(randomizedArticles);
+          }
+        } catch (error) {
+          console.error('Error fetching preview articles:', error);
+          setError('An error occurred while fetching articles.');
+        } finally {
+          setLoading(false);
+        }
+      };
+      
+    const renderItem = ({ item }) => {
+      return (
+        <TouchableOpacity
+          style={styles.articleContainer}
+          onPress={() => navigation.navigate('FullArticle', { article: item })}
+        >
+          <Text style={styles.articleTitle}>{item.title}</Text>
+          <Text style={styles.articleAuthor}>{item.author}</Text>
+          <Text style={styles.articleGenre}>{item.genre}</Text>
+          <Text style={styles.articleDate}>{item.publish_date}</Text>
+          <Text style={styles.articleExcerpt}>{item.excerpt}</Text>
+          <Image
+            source={{ uri: item.image }}
+            style={styles.articleImage}
+            onError={(error) => console.error('Image Error:', error)}
+          />
+        </TouchableOpacity>
+      );
+    };
 
-  const fetchPreviewArticles = async () => {
-    try {
-      const response = await fetch(`http://192.168.68.109:5000/api/articles/${genre}`);
-      const data = await response.json();
-      console.log('Fetched data:', data); // Log the data to the console
-      setPreviewArticles(data.articles);
-    } catch (error) {
-      console.error('Error fetching preview articles:', error);
-    }
-  };
-
-  const renderItem = ({ item }) => {
-    console.log('Image URL:', item.image); // Log the image URL to the console
     return (
-      <TouchableOpacity
-        style={styles.articleContainer}
-        onPress={() => navigation.navigate('FullArticle', { article: item })}
-      >
-        <Text style={styles.articleTitle}>{item.title}</Text>
-        <Text style={styles.articleAuthor}>{item.author}</Text>
-        <Text style={styles.articleDate}>{item.publish_date}</Text>
-        <Text style={styles.articleExcerpt}>{item.excerpt}</Text>
-        <Image
-          source={{ uri: item.image }}
-          style={styles.articleImage}
-          onError={(error) => console.error('Image Error:', error)} // Log image loading errors
-        />
-      </TouchableOpacity>
+      <View style={styles.container}>
+        {loading ? (
+          <Text>Loading...</Text>
+        ) : error ? (
+          <Text>Error: {error}</Text>
+        ) : (
+          <FlatList
+            data={previewArticles}
+            renderItem={renderItem}
+            keyExtractor={(item) => item._id}
+          />
+        )}
+      </View>
     );
-  };
-
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{genre} Articles</Text>
-      {previewArticles.length === 0 ? (
-        <Text>Loading...</Text>
-      ) : (
-        <FlatList
-          data={previewArticles}
-          renderItem={renderItem}
-          keyExtractor={(item) => item._id}
-        />
-      )}
-    </View>
-  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16,
   },
   articleContainer: {
     backgroundColor: '#eee',
@@ -89,9 +101,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   articleImage: {
-    width: 200, // Set a specific width
-    height: 200, // Set a specific height
-    resizeMode: 'cover', // or 'contain'
+    width: 200,
+    height: 200,
+    resizeMode: 'cover',
   },
 });
 

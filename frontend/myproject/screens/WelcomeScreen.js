@@ -3,8 +3,10 @@ import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
 
 // Define WelcomeScreen component
 const WelcomeScreen = ({ navigation }) => {
-  //State to store fetched genres
+  // State to store fetched genres
   const [genres, setGenres] = useState([]);
+  // State to store selected genres
+  const [selectedGenres, setSelectedGenres] = useState([]);
 
   // Fetch genres when component mounts
   useEffect(() => {
@@ -25,11 +27,17 @@ const WelcomeScreen = ({ navigation }) => {
     }
   };
 
- // Function to handle genre selection
-const handleGenrePress = (selectedGenre) => {
-  // Navigate to the PreviewScreen with the selected genre
-  navigation.navigate('Preview', { genre: selectedGenre });
-};
+  // Function to handle genre selection
+  const handleGenrePress = (selectedGenre) => {
+    // Toggle selected genre
+    setSelectedGenres((prevSelectedGenres) => {
+      if (prevSelectedGenres.includes(selectedGenre)) {
+        return prevSelectedGenres.filter((genre) => genre !== selectedGenre);
+      } else {
+        return [...prevSelectedGenres, selectedGenre];
+      }
+    });
+  };
 
   // Render component
   return (
@@ -40,17 +48,24 @@ const handleGenrePress = (selectedGenre) => {
         {genres.map((genre) => (
           <TouchableOpacity
             key={genre}
-            style={styles.genreTag}
+            style={[
+              styles.genreTag,
+              selectedGenres.includes(genre) && styles.selectedGenreTag,
+            ]}
             onPress={() => handleGenrePress(genre)}
           >
             <Text>{genre}</Text>
           </TouchableOpacity>
         ))}
       </View>
-      {/* <Button title="Continue" onPress={() => /* Handle Continue */}
+      <Button
+        title="Continue"
+        onPress={() => navigation.navigate('Preview', { genres: selectedGenres })}
+      />
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

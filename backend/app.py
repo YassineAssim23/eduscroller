@@ -1,5 +1,6 @@
 #Importing Libraries
 from flask import Flask, jsonify
+from flask import request
 from pymongo import MongoClient
 import os
 from dotenv import load_dotenv
@@ -24,26 +25,35 @@ db = client['articles']
 # List of allowed genres
 ALLOWED_GENRES = ["diy", "science", "technology", "health", "gear", "environment"]
 
-# Route to get articles from a specific genre
-@app.route('/api/articles/<string:genre>', methods=['GET'])
-def get_articles(genre):
-    # Check if the requested genre is allowed
-    if genre not in ALLOWED_GENRES:
-        return jsonify({"error": "Invalid genre"}), 400
+@app.route('/api/articles', methods=['POST'])
+def get_articles():
+    try:
+        # Get genres from the JSON request body
+        genres = request.json.get('genres', [])
 
-    # Access specified collection in MongoDB
-    collection_name = f"{genre}_articles"
-    collection = db[collection_name]
+        # Check if any of the requested genres are invalid
+        invalid_genres = [genre for genre in genres if genre not in ALLOWED_GENRES]
+        if invalid_genres:
+            return jsonify({"error": f"Invalid genres: {', '.join(invalid_genres)}"}), 400
 
-    # Retrieve all articles from that collection
-    articles = list(collection.find())
+        # Access specified collection in MongoDB
+        collection_names = [f"{genre}_articles" for genre in genres]
+        articles = []
 
-    # Converting Object Id to string for JSON serialization
-    for article in articles:
-        article['_id'] = str(article['_id'])
+        # Retrieve all articles from specified collections
+        for collection_name in collection_names:
+            collection = db[collection_name]
+            articles.extend(list(collection.find()))
 
-    # Return list of articles in JSON format
-    return jsonify({"articles": articles})
+        # Converting Object Id to string for JSON serialization
+        for article in articles:
+            article['_id'] = str(article['_id'])
+
+        # Return list of articles in JSON format
+        return jsonify({"articles": articles})
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Route to get genres from all collections
 @app.route('/api/genres', methods=['GET'])
