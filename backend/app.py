@@ -24,11 +24,17 @@ db = client['articles']
 # List of allowed genres
 ALLOWED_GENRES = ["diy", "science", "technology", "health", "gear", "environment"]
 
-# Route to get articles from specific collection
-@app.route('/api/articles/<string:collection_name>', methods=['GET'])
-def get_articles(collection_name):
+# Route to get articles from a specific genre
+@app.route('/api/articles/<string:genre>', methods=['GET'])
+def get_articles(genre):
+    # Check if the requested genre is allowed
+    if genre not in ALLOWED_GENRES:
+        return jsonify({"error": "Invalid genre"}), 400
+
     # Access specified collection in MongoDB
+    collection_name = f"{genre}_articles"
     collection = db[collection_name]
+
     # Retrieve all articles from that collection
     articles = list(collection.find())
 
@@ -38,7 +44,6 @@ def get_articles(collection_name):
 
     # Return list of articles in JSON format
     return jsonify({"articles": articles})
-
 
 # Route to get genres from all collections
 @app.route('/api/genres', methods=['GET'])

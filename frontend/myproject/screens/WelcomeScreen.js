@@ -25,12 +25,11 @@ const WelcomeScreen = ({ navigation }) => {
     }
   };
 
-  // Function to handle genre selection
-  const handleGenrePress = (selectedGenre) => {
-    // Implement logic to handle the selected genre
-    console.log('Selected Genre:', selectedGenre);
-    // You can navigate or perform other actions as needed
-  };
+ // Function to handle genre selection
+const handleGenrePress = (selectedGenre) => {
+  // Navigate to the PreviewScreen with the selected genre
+  navigation.navigate('Preview', { genre: selectedGenre });
+};
 
   // Render component
   return (
