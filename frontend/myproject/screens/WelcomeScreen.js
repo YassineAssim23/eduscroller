@@ -1,6 +1,6 @@
 // Import necessary dependencies from React and React Native
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Button, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Button, TouchableOpacity, Image } from 'react-native';
 import { useFonts, Montserrat_400Regular, Montserrat_600SemiBold } from '@expo-google-fonts/montserrat';
 
 // Define WelcomeScreen component
@@ -19,7 +19,7 @@ const WelcomeScreen = ({ navigation }) => {
   const fetchGenres = async () => {
     try {
       // Make a GET request to the server to fetch genres
-      const response = await fetch('http://192.168.68.109:5000/api/genres');
+      const response = await fetch('http://192.168.68.104:5000/api/genres');
       // Parse response as JSON
       const data = await response.json();
       // Update state with fetched genres
@@ -55,6 +55,10 @@ const WelcomeScreen = ({ navigation }) => {
   // Render component
   return (
     <View style={styles.container}>
+      <Image
+        source={require('../images/eduscrollogo.png')}
+        style={styles.logo}
+      />
       <Text style={styles.title}>Welcome to EDUScroll</Text>
       <Text style={styles.subtitle}>What are you interested in?</Text>
       <View style={styles.genreContainer}>
@@ -119,6 +123,12 @@ const styles = StyleSheet.create({
   genreText: {
     color: '#fff', // White text
   },
+  logo: {
+    width:250,
+    height:250,
+    resizeMode: 'contain',
+    marginBottom: 35,
+  }
 });
 
 // Export the WelcomeScreen component

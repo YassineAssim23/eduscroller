@@ -21,7 +21,7 @@ const PreviewScreen = ({ route, navigation }) => {
     const fetchPreviewArticles = async () => {
         try {
             // Send selected genres as an array in the request
-            const response = await fetch('http://192.168.68.109:5000/api/articles', {
+            const response = await fetch('http://192.168.68.104:5000/api/articles', {
                 method: 'POST', // Use POST method for sending data
                 headers: {
                     'Content-Type': 'application/json',

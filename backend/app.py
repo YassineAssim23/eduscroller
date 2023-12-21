@@ -97,6 +97,5 @@ def get_genres():
    return jsonify({"genres": all_genres_list})
 
 
-# Running Flask app on 0.0.0.0 so it's accessible from outside
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='192.168.68.104', port=5000, debug=True)
