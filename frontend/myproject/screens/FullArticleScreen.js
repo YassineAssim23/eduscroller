@@ -1,6 +1,6 @@
 // FullArticleScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image, ScrollView } from 'react-native';
 
 const FullArticleScreen = ({ route }) => {
   const { article } = route.params;
@@ -18,7 +18,7 @@ const FullArticleScreen = ({ route }) => {
       // Make a GET request to your Flask API to get the full article details
       const response = await fetch(`http://192.168.68.109:5000/api/articles/${article.genre}`);
       const data = await response.json();
-      
+
       // Set the detailed article data in the state
       setFullArticle(data.articles.find((a) => a.title === article.title));
     } catch (error) {
@@ -36,17 +36,27 @@ const FullArticleScreen = ({ route }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{fullArticle.title}</Text>
-      <Text style={styles.author}>{fullArticle.author}</Text>
-      <Text style={styles.body}>{fullArticle.body}</Text>
-    </View>
+    <ScrollView style={styles.scrollView}>
+      <View style={styles.container}>
+        <Text style={styles.title}>{fullArticle.title}</Text>
+        {fullArticle.image ? (
+          <Image source={{ uri: fullArticle.image }} style={styles.image} />
+        ) : (
+          <Text>No Image Available</Text>
+        )}
+        <Text style={styles.author}>{fullArticle.author}</Text>
+        <Text style={styles.date}>{fullArticle.publish_date}</Text>
+        <Text style={styles.body}>{fullArticle.body}</Text>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollView: {
     flex: 1,
+  },
+  container: {
     padding: 16,
   },
   title: {
@@ -61,6 +71,12 @@ const styles = StyleSheet.create({
   },
   body: {
     fontSize: 16,
+  },
+  image: {
+    width: '100%',
+    height: 200, // Adjust the height based on your design
+    resizeMode: 'cover', // or 'contain' based on your design
+    marginBottom: 16,
   },
 });
 

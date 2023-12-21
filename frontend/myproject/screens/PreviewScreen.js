@@ -1,6 +1,6 @@
 // PreviewScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
 
 const PreviewScreen = ({ route, navigation }) => {
   const { genre } = route.params;
@@ -23,18 +23,26 @@ const PreviewScreen = ({ route, navigation }) => {
       console.error('Error fetching preview articles:', error);
     }
   };
-  
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity
-      style={styles.articleContainer}
-      onPress={() => navigation.navigate('FullArticle', { article: item })}
-    >
-      <Text style={styles.articleTitle}>{item.title}</Text>
-      <Text style={styles.articleAuthor}>{item.author}</Text>
-      <Text style={styles.articleExcerpt}>{item.excerpt}</Text>
-    </TouchableOpacity>
-  );
+  const renderItem = ({ item }) => {
+    console.log('Image URL:', item.image); // Log the image URL to the console
+    return (
+      <TouchableOpacity
+        style={styles.articleContainer}
+        onPress={() => navigation.navigate('FullArticle', { article: item })}
+      >
+        <Text style={styles.articleTitle}>{item.title}</Text>
+        <Text style={styles.articleAuthor}>{item.author}</Text>
+        <Text style={styles.articleDate}>{item.publish_date}</Text>
+        <Text style={styles.articleExcerpt}>{item.excerpt}</Text>
+        <Image
+          source={{ uri: item.image }}
+          style={styles.articleImage}
+          onError={(error) => console.error('Image Error:', error)} // Log image loading errors
+        />
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -50,7 +58,6 @@ const PreviewScreen = ({ route, navigation }) => {
       )}
     </View>
   );
-  
 };
 
 const styles = StyleSheet.create({
@@ -80,6 +87,11 @@ const styles = StyleSheet.create({
   articleExcerpt: {
     fontSize: 14,
     marginTop: 8,
+  },
+  articleImage: {
+    width: 200, // Set a specific width
+    height: 200, // Set a specific height
+    resizeMode: 'cover', // or 'contain'
   },
 });
 
