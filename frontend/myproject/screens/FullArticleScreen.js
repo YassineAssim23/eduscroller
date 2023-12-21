@@ -7,6 +7,7 @@ const FullArticleScreen = ({ route }) => {
 
   // State to store the detailed article data
   const [fullArticle, setFullArticle] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // Fetch detailed article data when the screen mounts
@@ -16,15 +17,38 @@ const FullArticleScreen = ({ route }) => {
   const fetchArticleDetails = async () => {
     try {
       // Make a GET request to your Flask API to get the full article details
-      const response = await fetch(`http://192.168.68.109:5000/api/articles/${article.genre}`);
+      const response = await fetch(`http://192.168.68.109:5000/api/articles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ genres: [article.genre] }),
+      });
+
+      // Check if the response status is ok
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      // Parse response as JSON
       const data = await response.json();
 
       // Set the detailed article data in the state
       setFullArticle(data.articles.find((a) => a.title === article.title));
     } catch (error) {
       console.error('Error fetching article details:', error);
+      setError(error.message);
     }
   };
+
+  if (error) {
+    // Render an error message
+    return (
+      <View style={styles.container}>
+        <Text>Error: {error}</Text>
+      </View>
+    );
+  }
 
   if (!fullArticle) {
     // Render loading state or an error message
@@ -74,8 +98,8 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '100%',
-    height: 200, // Adjust the height based on your design
-    resizeMode: 'cover', // or 'contain' based on your design
+    height: 200,
+    resizeMode: 'cover',
     marginBottom: 16,
   },
 });

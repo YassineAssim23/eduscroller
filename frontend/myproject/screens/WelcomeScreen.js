@@ -54,7 +54,7 @@ const WelcomeScreen = ({ navigation }) => {
             ]}
             onPress={() => handleGenrePress(genre)}
           >
-            <Text>{genre}</Text>
+            <Text style={styles.genreText}>{genre}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -65,7 +65,6 @@ const WelcomeScreen = ({ navigation }) => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
@@ -94,6 +93,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     margin: 4,
+  },
+  selectedGenreTag: {
+    backgroundColor: '#77c', // Adjust the color to your preference
+  },
+  genreText: {
+    // Add additional styles for genre text if needed
   },
 });
 
