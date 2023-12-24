@@ -96,6 +96,5 @@ def get_genres():
    # Return list of genres in JSON format
    return jsonify({"genres": all_genres_list})
 
-
 if __name__ == '__main__':
-    app.run(host='192.168.68.104', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)

@@ -21,7 +21,7 @@ const FullArticleScreen = ({ route }) => {
     const fetchArticleDetails = async () => {
         try {
             // Make a GET request to the Flask API to get the full article details
-            const response = await fetch(`http://192.168.68.104:5000/api/articles`, {
+            const response = await fetch(`http://192.168.68.105:5000/api/articles`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

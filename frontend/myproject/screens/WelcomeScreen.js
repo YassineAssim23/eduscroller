@@ -19,7 +19,7 @@ const WelcomeScreen = ({ navigation }) => {
   const fetchGenres = async () => {
     try {
       // Make a GET request to the server to fetch genres
-      const response = await fetch('http://192.168.68.104:5000/api/genres');
+      const response = await fetch('http://192.168.68.105:5000/api/genres');
       // Parse response as JSON
       const data = await response.json();
       // Update state with fetched genres
