@@ -16,7 +16,7 @@ articles.
 - [Installation](#installation)
 - [Usage](#usage)
 - [Contributing](#contributing)
-- [License](#license)
+- [MIT License](#mit-license)
 
 ## Overview
 
